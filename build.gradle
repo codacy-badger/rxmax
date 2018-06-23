@@ -1,0 +1,79 @@
+repositories {
+    jcenter()
+    mavenCentral()
+    mavenLocal()
+}
+
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'idea'
+
+group = 'com.github.tidalflow'
+version = '1.0'
+
+dependencies {
+    api 'com.lmax:disruptor:3.2.0'
+    api 'io.reactivex.rxjava2:rxjava:2.1.14'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier 'javadoc'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'rxmax'
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = "RxMax"
+                description = "A Library which provides the power of LMAX Disruptor to RxJava"
+                url = "https://github.com/tidalflow/rxmax"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "tidalflow"
+                        name = "Guillaume Bazin"
+                        email = "gandorion.bazin@gmail.com"
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/tidalflow/rxmax.git'
+                    developerConnection = 'scm:git:ssh://github.com/tidalflow/rxmax.git'
+                    url = 'https://github.com/tidalflow/rxmax'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            // change URLs to point to your repos, e.g. http://my.org/repo
+            def releasesRepoUrl = "$buildDir/repos/releases"
+            def snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            url version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
